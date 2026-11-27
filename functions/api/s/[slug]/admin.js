@@ -26,8 +26,27 @@ export async function onRequestGet({ env, params, request }) {
     const txt = encodeURIComponent(`تذكير بميعادك بكرة الساعة ${time} في ${shop.name}. لتأكيد أو تغيير الميعاد: ${new URL(request.url).origin}/b/${code}`);
     return `https://wa.me/2${phone}?text=${txt}`;
   };
+  const { results: svcs } = await env.DB.prepare(
+    'SELECT id, name, duration_min, price_egp FROM services WHERE shop_id=? AND active=1 ORDER BY id'
+  ).bind(shop.id).all();
+  // الأسبوع الحالي (من السبت) لعرض الأسبوع
+  const d0 = new Date(today + 'T00:00:00Z');
+  const back = (d0.getUTCDay() + 1) % 7; // السبت بداية الأسبوع
+  d0.setUTCDate(d0.getUTCDate() - back);
+  const fmt = d => d.toISOString().slice(0, 10);
+  const weekStart = fmt(d0);
+  const dEnd = new Date(d0); dEnd.setUTCDate(dEnd.getUTCDate() + 6);
+  const { results: wk } = await env.DB.prepare(
+    `SELECT b.date, b.start_min, b.status, s.name service, st.name staff_name, c.name cust_name
+     FROM bookings b JOIN services s ON s.id=b.service_id LEFT JOIN staff st ON st.id=b.staff_id
+     JOIN customers c ON c.id=b.customer_id
+     WHERE b.shop_id=? AND b.date>=? AND b.date<=? AND b.status!='canceled' ORDER BY b.date, b.start_min`
+  ).bind(shop.id, weekStart, fmt(dEnd)).all();
   return json({
-    ok: true, shop: { name: shop.name, slug: shop.slug }, date: today,
+    ok: true, shop: { name: shop.name, slug: shop.slug, open_min: shop.open_min, close_min: shop.close_min, slot_step_min: shop.slot_step_min }, date: today,
+    services: svcs,
+    week_start: weekStart,
+    week: wk.map(b => ({ date: b.date, time: fmtMin(b.start_min), service: b.service, staff: b.staff_name, customer: b.cust_name, status: b.status })),
     bookings: rows.map(b => ({ id: b.id, code: b.code, time: fmtMin(b.start_min), service: b.service,
       staff: b.staff_name, customer: b.cust_name, status: b.status, kind: b.kind,
       repeat_no_show: b.no_shows >= 2 })),
