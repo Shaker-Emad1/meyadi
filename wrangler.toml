@@ -1,0 +1,8 @@
+name = "meyadi"
+pages_build_output_dir = "public"
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "meyadi-db"
+database_id = "FILL_AFTER_CREATE"
