@@ -5,4 +5,4 @@ compatibility_date = "2026-11-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "meyadi-db"
-database_id = "FILL_AFTER_CREATE"
+database_id = "90e56e47-14e4-4cf5-a2f6-a531cdc2bf47"

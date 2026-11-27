@@ -1,6 +1,6 @@
 // المواعيد الفاضية ليوم وخدمة: GET ?date=YYYY-MM-DD&service=1&staff=any
-import { json, bad, getShop, busyMap } from '../../_lib/db.js';
-import { availableSlots, slotsForStaff, fmtMin, parseDaysOff, weekdayCairo, todayCairo } from '../../_lib/slots.js';
+import { json, bad, getShop, busyMap } from '../../../_lib/db.js';
+import { availableSlots, slotsForStaff, fmtMin, parseDaysOff, weekdayCairo, todayCairo } from '../../../_lib/slots.js';
 
 export async function onRequestGet({ env, params, request }) {
   const url = new URL(request.url);

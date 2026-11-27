@@ -1,5 +1,5 @@
 // إحصائيات المحل: بالخدمة وبالساعة وبالقناة + نسبة الغياب + توقع الذروة
-import { json, bad, checkKey } from '../../_lib/db.js';
+import { json, bad, checkKey } from '../../../_lib/db.js';
 
 export async function onRequestGet({ env, params, request }) {
   const key = new URL(request.url).searchParams.get('key') || '';

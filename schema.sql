@@ -61,7 +61,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS one_active_slot
 CREATE TABLE IF NOT EXISTS waitlist(
   id INTEGER PRIMARY KEY,
   shop_id INTEGER NOT NULL,
-  service_id INTEGER NOT NULL,
+  service_id INTEGER,
   staff_id INTEGER,
   customer_id INTEGER NOT NULL,
   date TEXT NOT NULL,

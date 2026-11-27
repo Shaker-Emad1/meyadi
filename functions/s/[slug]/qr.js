@@ -1,5 +1,5 @@
 // صفحة QR للطباعة
-import { getShop } from '../../../_lib/db.js';
+import { getShop } from '../../_lib/db.js';
 export async function onRequestGet({ env, params, request }) {
   const shop = await getShop(env.DB, params.slug);
   if (!shop) return new Response('not found', { status: 404 });

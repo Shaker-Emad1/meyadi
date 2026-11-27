@@ -1,6 +1,6 @@
 // مساعد بالعامية: بيفهم طلب بسيط (خدمة + يوم + ساعة) ويرشح مواعيد فاضية
-import { json, bad, getShop, shopContext } from '../../_lib/db.js';
-import { todayCairo } from '../../_lib/slots.js';
+import { json, bad, getShop, shopContext } from '../../../_lib/db.js';
+import { todayCairo } from '../../../_lib/slots.js';
 
 const DAYS = { 'السبت': 6, 'الحد': 0, 'الأحد': 0, 'الاتنين': 1, 'الاثنين': 1, 'التلات': 2, 'التلاتاء': 2, 'الثلاثاء': 2, 'الاربع': 3, 'الأربع': 3, 'الاربعاء': 3, 'الخميس': 4, 'الجمعه': 5, 'الجمعة': 5 };
 

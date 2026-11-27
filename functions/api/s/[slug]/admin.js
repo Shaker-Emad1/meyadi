@@ -1,6 +1,6 @@
 // لوحة صاحب المحل (محمية بمفتاح) + عمليات: walkin / status / import
-import { json, bad, checkKey, upsertCustomer } from '../../_lib/db.js';
-import { fmtMin, todayCairo, isValidEgyptPhone, bookingCode } from '../../_lib/slots.js';
+import { json, bad, checkKey, upsertCustomer } from '../../../_lib/db.js';
+import { fmtMin, todayCairo, isValidEgyptPhone, bookingCode } from '../../../_lib/slots.js';
 
 export async function onRequestGet({ env, params, request }) {
   const key = new URL(request.url).searchParams.get('key') || '';

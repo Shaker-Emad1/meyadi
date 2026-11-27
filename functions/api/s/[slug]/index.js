@@ -1,5 +1,5 @@
 // بيانات المحل العامة: الخدمات والفريق والتقييمات
-import { json, bad, getShop, shopContext } from '../../_lib/db.js';
+import { json, bad, getShop, shopContext } from '../../../_lib/db.js';
 
 export async function onRequestGet({ env, params }) {
   const shop = await getShop(env.DB, params.slug);

@@ -1,6 +1,6 @@
 // تنفيذ الحجز — منع التضارب بقيد فريد في قاعدة البيانات (الإدراج الفاشل = 409)
-import { json, bad, getShop, busyMap, upsertCustomer } from '../../_lib/db.js';
-import { pickFreeStaff, isValidEgyptPhone, fmtMin, bookingCode } from '../../_lib/slots.js';
+import { json, bad, getShop, busyMap, upsertCustomer } from '../../../_lib/db.js';
+import { pickFreeStaff, isValidEgyptPhone, fmtMin, bookingCode } from '../../../_lib/slots.js';
 
 export async function onRequestPost({ env, params, request }) {
   let body; try { body = await request.json(); } catch { return bad('JSON مش صالح'); }

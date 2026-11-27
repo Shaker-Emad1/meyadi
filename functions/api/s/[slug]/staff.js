@@ -1,6 +1,6 @@
 // جدول موظف واحد برقم سري (صلاحيات: كل موظف يشوف جدوله بس)
-import { json, bad, getShop } from '../../_lib/db.js';
-import { fmtMin, todayCairo } from '../../_lib/slots.js';
+import { json, bad, getShop } from '../../../_lib/db.js';
+import { fmtMin, todayCairo } from '../../../_lib/slots.js';
 
 export async function onRequestGet({ env, params, request }) {
   const pin = new URL(request.url).searchParams.get('pin') || '';
