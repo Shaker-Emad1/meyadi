@@ -2,12 +2,13 @@
   "name": "meyadi",
   "version": "0.1.0",
   "private": true,
-  "description": "ميعادي — منصة حجز مواعيد مجانية للمحلات الصغيرة في مصر (Cloudflare Pages + Functions + D1)",
+  "description": "ميعادي — تشغيل الطابور للمحلات الصغيرة في مصر (Cloudflare Pages + Functions + D1)",
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "migrate:local": "wrangler d1 execute meyadi-db --local --file=schema.sql && wrangler d1 execute meyadi-db --local --file=seed.sql",
-    "migrate": "wrangler d1 execute meyadi-db --remote --file=schema.sql && wrangler d1 execute meyadi-db --remote --file=seed.sql",
+    "db:local": "wrangler d1 execute meyadi-db --local --file=schema.sql && wrangler d1 execute meyadi-db --local --file=migrations/001_queue.sql && wrangler d1 execute meyadi-db --local --file=seed.sql",
+    "db:migrate": "wrangler d1 execute meyadi-db --remote --file=migrations/001_queue.sql",
+    "dev": "wrangler pages dev public --d1 DB=meyadi-db",
     "deploy": "wrangler pages deploy public --project-name meyadi"
   }
 }
