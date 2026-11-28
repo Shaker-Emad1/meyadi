@@ -110,7 +110,7 @@ const $ = id => document.getElementById(id);
 let DATA = null;
 const pad = n => String(n).padStart(2,'0');
 function fmt(m){const h=Math.floor(m/60),mm=m%60,ap=h<12?'ص':'م';let x=h%12;if(!x)x=12;return x+':'+pad(mm)+' '+ap}
-const TAG = {confirmed:['قادم','t-wait'],pending_confirm:['محتاج تأكيد','t-late'],in_service:['داخل','t-now'],done:['تم','t-done'],no_show:['مجاش','t-no']};
+const TAG = {arrived:['وصل','t-now'],confirmed:['قادم','t-wait'],pending_confirm:['محتاج تأكيد','t-late'],in_service:['داخل','t-now'],done:['تم','t-done'],no_show:['مجاش','t-no']};
 
 async function load(){
   const r = await fetch('/api/s/'+SLUG+'/admin?key='+KEY);

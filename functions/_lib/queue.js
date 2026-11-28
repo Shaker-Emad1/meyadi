@@ -17,7 +17,7 @@ export function maskName(name) {
 
 // يبني حالة الطابور من صفوف الحجوزات
 export function computeQueue(rows, nowMin) {
-  const active = rows.filter(b => ['confirmed', 'pending_confirm', 'in_service'].includes(b.status));
+  const active = rows.filter(b => ['confirmed', 'pending_confirm', 'arrived', 'in_service'].includes(b.status));
   const inService = active.find(b => b.status === 'in_service') || null;
   const waiting = active.filter(b => b !== inService);
   let cursor = inService ? Math.max(nowMin, inService.end_min) : nowMin;
@@ -44,7 +44,7 @@ export function computeQueue(rows, nowMin) {
 
 export async function buildQueue(db, shop, date = todayCairo()) {
   const { results } = await db.prepare(
-    `SELECT b.id, b.code, b.start_min, b.end_min, b.status, b.arrived_at, b.kind, b.staff_id,
+    `SELECT b.id, b.code, b.start_min, b.end_min, b.status, b.kind, b.staff_id,
             s.name service, s.duration_min, s.price_egp,
             st.name staff, c.name customer
      FROM bookings b
@@ -52,8 +52,8 @@ export async function buildQueue(db, shop, date = todayCairo()) {
      LEFT JOIN staff st ON st.id = b.staff_id
      JOIN customers c ON c.id = b.customer_id
      WHERE b.shop_id = ? AND b.date = ?
-       AND b.status IN ('confirmed','pending_confirm','in_service','done','no_show')
-     ORDER BY b.start_min, b.id`
+       AND b.status IN ('confirmed','pending_confirm','arrived','in_service','done','no_show')
+     ORDER BY (b.status='arrived') DESC, b.start_min, b.id`
   ).bind(shop.id, date).all();
   const nowMin = nowCairoMin();
   const q = computeQueue(results, nowMin);
@@ -61,7 +61,7 @@ export async function buildQueue(db, shop, date = todayCairo()) {
     date, ...q,
     rows: results.map(b => ({
       code: b.code, pos: 0, name: maskName(b.customer), service: b.service,
-      staff: b.staff || '', start: fmtMin(b.start_min), status: b.status, arrived: !!b.arrived_at,
+      staff: b.staff || '', start: fmtMin(b.start_min), status: b.status, arrived: b.status === 'arrived',
     })),
   };
 }

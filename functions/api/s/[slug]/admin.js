@@ -50,11 +50,11 @@ export async function onRequestGet({ env, params, request }) {
     week_start: weekStart,
     week: wk.map(b => ({ date: b.date, time: fmtMin(b.start_min), service: b.service, staff: b.staff_name, customer: b.cust_name, status: b.status })),
     bookings: rows.map(b => ({ id: b.id, code: b.code, time: fmtMin(b.start_min), service: b.service,
-      staff: b.staff_name, customer: b.cust_name, status: b.status, kind: b.kind, arrived: !!b.arrived_at,
+      staff: b.staff_name, customer: b.cust_name, status: b.status, kind: b.kind, arrived: b.status === 'arrived',
       repeat_no_show: b.no_shows >= 2 })),
     queue: {
       now: q.now ? { id: q.now.id, name: q.now.customer, service: q.now.service, staff: q.now.staff || '', late_min: q.now.late_min, code: q.now.code } : null,
-      waiting: q.waiting.map(b => ({ id: b.id, pos: b.pos, name: b.customer, service: b.service, start: fmtMin(b.start_min), eta: fmtMin(b.eta_min), arrived: !!b.arrived_at })),
+      waiting: q.waiting.map(b => ({ id: b.id, pos: b.pos, name: b.customer, service: b.service, start: fmtMin(b.start_min), eta: fmtMin(b.eta_min), arrived: b.status === 'arrived' })),
       stats: q.stats,
     },
     expected_egp: rows.filter(b => b.status !== 'no_show').reduce((a, b) => a + (b.free_loyalty ? 0 : b.price_egp), 0),
@@ -103,7 +103,7 @@ export async function onRequestPost({ env, params, request }) {
   }
 
   if (body.op === 'arrive') {
-    const { results } = await env.DB.prepare("UPDATE bookings SET arrived_at=datetime('now') WHERE id=? AND shop_id=? RETURNING status")
+    const { results } = await env.DB.prepare("UPDATE bookings SET status='arrived' WHERE id=? AND shop_id=? AND status IN ('confirmed','pending_confirm') RETURNING status")
       .bind(Number(body.booking_id), shop.id).all();
     if (!results.length) return bad('الحجز مش موجود', 404);
     return json({ ok: true });
@@ -114,7 +114,7 @@ export async function onRequestPost({ env, params, request }) {
     const today = todayCairo();
     const cur = await env.DB.prepare("SELECT id FROM bookings WHERE shop_id=? AND date=? AND status='in_service' LIMIT 1").bind(shop.id, today).first();
     if (cur && cur.id !== Number(body.booking_id)) await finish(env, shop.id, cur.id, 'done');
-    const { results } = await env.DB.prepare("UPDATE bookings SET status='in_service', called_at=datetime('now') WHERE id=? AND shop_id=? RETURNING id")
+    const { results } = await env.DB.prepare("UPDATE bookings SET status='in_service' WHERE id=? AND shop_id=? RETURNING id")
       .bind(Number(body.booking_id), shop.id).all();
     if (!results.length) return bad('الحجز مش موجود', 404);
     return json({ ok: true });
@@ -127,10 +127,10 @@ export async function onRequestPost({ env, params, request }) {
     // الأولوية: اللي أكد وصوله، وبعده الأقرب في الميعاد
     const next = await env.DB.prepare(
       `SELECT id FROM bookings WHERE shop_id=? AND date=? AND status IN ('confirmed','pending_confirm')
-       ORDER BY (arrived_at IS NOT NULL) DESC, start_min, id LIMIT 1`
+       ORDER BY (status='arrived') DESC, start_min, id LIMIT 1`
     ).bind(shop.id, today).first();
     if (!next) return json({ ok: true, called: null });
-    await env.DB.prepare("UPDATE bookings SET status='in_service', called_at=datetime('now') WHERE id=?").bind(next.id).run();
+    await env.DB.prepare("UPDATE bookings SET status='in_service' WHERE id=?").bind(next.id).run();
     return json({ ok: true, called: next.id });
   }
 

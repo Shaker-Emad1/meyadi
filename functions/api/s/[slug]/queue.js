@@ -6,7 +6,7 @@ import { fmtMin, todayCairo } from '../../../_lib/slots.js';
 const publicRow = (b) => ({
   pos: b.pos, code: b.code, name: maskName(b.customer), service: b.service,
   staff: b.staff || '', start: fmtMin(b.start_min), eta: fmtMin(b.eta_min),
-  wait_min: b.wait_min, arrived: !!b.arrived_at,
+  wait_min: b.wait_min, arrived: b.status === 'arrived',
 });
 
 export async function onRequestGet({ env, params, request }) {
@@ -35,13 +35,13 @@ export async function onRequestPost({ env, params, request }) {
   if (!b) return bad('الحجز مش موجود', 404);
 
   if (body.action === 'arrive') {
-    await env.DB.prepare("UPDATE bookings SET arrived_at=datetime('now'), status=CASE WHEN status='pending_confirm' THEN 'confirmed' ELSE status END WHERE id=?").bind(b.id).run();
+    await env.DB.prepare("UPDATE bookings SET status='arrived' WHERE id=? AND status IN ('confirmed','pending_confirm')").bind(b.id).run();
     const q = await buildQueue(env.DB, shop, b.date);
     const st = ticketState(q, code);
     return json({ ok: true, state: st.state, pos: st.pos, wait_min: st.wait_min, eta: st.eta_min ? fmtMin(st.eta_min) : '' });
   }
   if (body.action === 'leave') {
-    await env.DB.prepare("UPDATE bookings SET status='canceled' WHERE id=? AND status IN ('confirmed','pending_confirm')").bind(b.id).run();
+    await env.DB.prepare("UPDATE bookings SET status='canceled' WHERE id=? AND status IN ('confirmed','pending_confirm','arrived')").bind(b.id).run();
     return json({ ok: true });
   }
   return bad('إجراء غير معروف');
