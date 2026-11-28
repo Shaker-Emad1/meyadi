@@ -5,7 +5,13 @@
   "display": "standalone",
   "dir": "rtl",
   "lang": "ar",
-  "background_color": "#F6F5F1",
-  "theme_color": "#0D7A6F",
-  "icons": [{"src": "/assets/icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+  "background_color": "#0B0C0D",
+  "theme_color": "#0B0C0D",
+  "icons": [
+    {
+      "src": "/assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
 }

@@ -2,44 +2,136 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ميعادي · حجز مواعيد للمحلات الصغيرة</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0B0C0D">
+<title>ميعادي · الطابور، مش الكالندر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/app.css">
 <link rel="manifest" href="/app.webmanifest">
+<style>
+.hero{padding:6px 0 26px}
+.hero h1{font-size:clamp(36px,8.6vw,68px);line-height:1.16;margin:22px 0 14px}
+.hero h1 em{font-style:normal;color:var(--amber)}
+.hero p.lead{font-size:15px;color:#B9BEC3;max-width:520px;line-height:1.7}
+.hero .row{margin-top:18px}
+.demo{margin-top:26px}
+.demo .ticket{max-width:430px}
+.sect{padding:30px 0}
+.sect h2{font-size:clamp(24px,5vw,34px)}
+.sect .sub{color:var(--mut2);font-size:13.5px;margin-top:6px}
+body.dark .sect .sub{color:var(--mut)}
+.steps3{display:grid;gap:10px;margin-top:18px}
+@media(min-width:760px){.steps3{grid-template-columns:repeat(3,1fr)}}
+.stepc{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.stepc b{display:block;font-family:'Alexandria';font-size:15px;margin:8px 0 4px}
+.stepc p{font-size:12.5px;color:var(--mut);line-height:1.6}
+.stepc .n{font-family:'IBM Plex Mono';font-size:11px;color:var(--amber);letter-spacing:.1em}
+.create{background:var(--paper);color:var(--ink);border-radius:22px;padding:22px}
+.create h2{font-size:22px}
+.create p{font-size:12.5px;color:var(--mut2);margin-top:4px}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.links a{font-size:12px;font-weight:700;padding:9px 12px;border:1px solid #D8CFBC;border-radius:999px;text-decoration:none;color:var(--ink)}
+</style>
 </head>
-<body>
-<div class="hero"><div class="inner">
-  <div class="brand">ميعادي</div>
-  <h1>صفحة حجز لمحلك في 5 دقايق — مجانا</h1>
-  <div class="meta"><span>عيادات · صالونات · كورسات · أي نشاط بمواعيد</span></div>
-</div></div>
-<div class="wrap single">
-  <div class="card">
-    <div class="sec">اعمل صفحة محلك</div>
-    <div class="field"><label>اسم المحل</label><input id="name" placeholder="مثال: صالون النور"></div>
-    <div class="field"><label>العنوان (اختياري)</label><input id="address"></div>
-    <button class="btn" id="create">إنشاء الصفحة</button>
-    <div class="msg" id="msg"></div>
-    <div id="result" style="display:none">
-      <pre class="rpt" id="links"></pre>
-      <small style="color:var(--mut);font-weight:700">احفظ مفتاح الإدارة، مش هيبان تاني.</small>
+<body class="dark">
+<div class="wrap">
+  <div class="topbar">
+    <a class="logo" href="/">مي<i>عادي</i></a>
+    <div class="shop"><b>ميعادي</b>تشغيل الطابور للمحلات</div>
+  </div>
+
+  <section class="hero">
+    <div class="kicker">MEYADI · QUEUE OS · مجانا</div>
+    <h1>الطابور،<br>مش <em>الكالندر</em>.</h1>
+    <p class="lead">المحلات في مصر شغالة بالدور، مش بمواعيد كل ربع ساعة. ميعادي بيدي كل عميل تذكرة دور، ووقت وصول متوقع، وبيدي المحل شاشة انتظار ولوحة يشغّل بيها يومه.</p>
+    <div class="row">
+      <a class="btn amber" href="/s/demo-salon/">جرب صالون النور (ديمو)</a>
+      <a class="btn ghost" href="#create">اعمل محلك</a>
     </div>
-  </div>
-  <div class="card"><div class="sec">جرب الديمو</div>
-    <a class="btn ghost" href="/s/demo-salon/">صفحة حجز صالون النور (تجريبي)</a>
-  </div>
+  </section>
+
+  <section class="demo">
+    <div class="ticket" id="demoTicket">
+      <div class="t-label">الطابور دلوقتي · صالون النور</div>
+      <div class="t-row" style="margin-top:6px">
+        <div>
+          <div class="t-num" id="dNum">—<small>دور</small></div>
+          <div class="t-eta" id="dEta">بيحمل…</div>
+        </div>
+        <div style="text-align:left">
+          <div class="small muted">المستنيين</div>
+          <div class="num" id="dWait" style="font-size:34px">—</div>
+        </div>
+      </div>
+      <div class="perf on-paper"></div>
+      <div class="t-row">
+        <div><b id="dSvc">…</b><span id="dWho">…</span></div>
+        <a class="btn sm" href="/s/demo-salon/queue" style="background:var(--ink);color:var(--paper)">شوف الطابور</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sect">
+    <h2>إزاي بيشتغل</h2>
+    <div class="sub">تلات حاجات بيفرقوا عن أي أداة حجز تانية.</div>
+    <div class="steps3">
+      <div class="stepc"><div class="n">01</div><b>تذكرة دور، مش ميعاد</b><p>العميل بياخد رقمه في الطابور ووقت وصول متوقع، ويتابع من موبايله من غير تطبيق.</p></div>
+      <div class="stepc"><div class="n">02</div><b>شاشة انتظار في المحل</b><p>تابلت على الحيطة بيعرض مين جوه ومين جاي، وبيتحدث لوحده كل ١٠ ثواني.</p></div>
+      <div class="stepc"><div class="n">03</div><b>لوحة صاحب المحل</b><p>نداء الدور، تأكيد وصول، حجز يدوي، وإيراد اليوم. كله في شاشة واحدة.</p></div>
+    </div>
+  </section>
+
+  <section class="sect" id="create">
+    <div class="create">
+      <h2>اعمل صفحة محلك</h2>
+      <p>مجانا بالكامل، على Cloudflare. المحل بياخد صفحة برانده ولينك وQR وشاشة انتظار.</p>
+      <div style="margin-top:14px">
+        <div class="field"><label>اسم المحل</label><input id="name" placeholder="مثال: صالون النور"></div>
+        <div class="field"><label>العنوان (اختياري)</label><input id="address" placeholder="المعادي، القاهرة"></div>
+        <button class="btn block" id="create">إنشاء الصفحة</button>
+        <div class="msg" id="msg"></div>
+        <div id="result" style="display:none;margin-top:12px">
+          <pre class="mono" id="links" style="white-space:pre-wrap;background:#fff;border:1px solid #D8CFBC;border-radius:12px;padding:12px;font-size:11.5px;line-height:1.8"></pre>
+          <small class="tiny muted">احفظ مفتاح الإدارة، مش هيبان تاني.</small>
+        </div>
+      </div>
+      <div class="links">
+        <a href="/s/demo-salon/">صفحة المحل</a>
+        <a href="/s/demo-salon/queue">الطابور اللايف</a>
+        <a href="/s/demo-salon/tv">شاشة الانتظار</a>
+        <a href="/s/demo-salon/admin?key=demo-admin-2026">لوحة المحل</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">MEYADI · دورك في جيبك</div>
 </div>
 <script>
-document.getElementById('create').onclick=async()=>{
-  const name=document.getElementById('name').value.trim();
-  if(!name){const m=document.getElementById('msg');m.className='msg err';m.textContent='اكتب اسم المحل';return}
-  const r=await fetch('/api/shops',{method:'POST',headers:{'content-type':'application/json'},
-    body:JSON.stringify({name,address:document.getElementById('address').value})});
-  const d=await r.json();
-  if(!d.ok){const m=document.getElementById('msg');m.className='msg err';m.textContent=d.error;return}
-  document.getElementById('result').style.display='block';
-  document.getElementById('links').textContent='صفحة الحجز: '+location.origin+d.page+'\nلوحة التحكم: '+location.origin+d.admin;
+const $ = id => document.getElementById(id);
+async function demo(){
+  try{
+    const r = await fetch('/api/s/demo-salon/queue');
+    const d = await r.json();
+    if(!d.ok) throw 0;
+    if(d.now){ const n = d.waiting[0]; $('dNum').innerHTML = (n?n.pos:'—') + '<small>دور</small>'; $('dEta').innerHTML = 'داخل دلوقتي: ' + d.now.name; $('dSvc').textContent = d.now.service; $('dWho').textContent = d.now.staff || ''; }
+    else if(d.waiting.length){ const w = d.waiting[0]; $('dNum').innerHTML = w.pos + '<small>دور</small>'; $('dEta').innerHTML = 'بعد حوالي <b>' + w.wait_min + ' دقيقة</b>'; $('dSvc').textContent = w.service; $('dWho').textContent = w.name; }
+    else { $('dNum').innerHTML = '0<small>دور</small>'; $('dEta').textContent = 'الطابور فاضي'; $('dSvc').textContent = 'احجز أول دور'; $('dWho').textContent = ''; }
+    $('dWait').textContent = d.stats.waiting;
+  }catch(e){ $('dEta').textContent = 'الديمو مش متاح دلوقتي'; }
+}
+demo();
+$('create').onclick = async () => {
+  const name = $('name').value.trim();
+  const m = $('msg');
+  if(!name){ m.className='msg err'; m.textContent='اكتب اسم المحل'; return; }
+  const r = await fetch('/api/shops', { method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({ name, address: $('address').value }) });
+  const d = await r.json();
+  if(!d.ok){ m.className='msg err'; m.textContent=d.error; return; }
+  $('result').style.display='block';
+  $('links').textContent = 'صفحة المحل: ' + location.origin + d.page + '\nالطابور: ' + location.origin + '/s/' + d.slug + '/queue\nشاشة الانتظار: ' + location.origin + '/s/' + d.slug + '/tv\nلوحة التحكم: ' + location.origin + d.admin;
 };
-if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js');
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
 </script>
-</body></html>
+</body>
+</html>
